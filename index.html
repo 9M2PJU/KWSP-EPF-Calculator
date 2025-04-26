@@ -260,6 +260,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="calculator-container">
@@ -268,7 +269,7 @@
             <h2>KWSP (EPF) Retirement Savings Calculator</h2>
             <p class="description">Calculate your EPF contributions and estimate your retirement savings based on your salary and career path.</p>
         </div>
-        
+
         <form id="kwsp-form">
             <div class="form-columns">
                 <div class="form-column">
@@ -276,17 +277,17 @@
                         <label for="current-age">Current Age:</label>
                         <input type="number" id="current-age" name="current-age" min="18" max="59" value="30" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="current-salary">Current Monthly Salary (RM):</label>
                         <input type="number" id="current-salary" name="current-salary" min="1" value="3000" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="current-balance">Current EPF Balance (RM, optional):</label>
                         <input type="number" id="current-balance" name="current-balance" min="0" value="50000">
                     </div>
-                    
+
                     <div class="toggle-switch">
                         <label for="rate-option">Use Standard Rate:</label>
                         <label class="switch">
@@ -295,7 +296,7 @@
                         </label>
                     </div>
                 </div>
-                
+
                 <div class="form-column">
                     <div class="form-group">
                         <label for="retirement-age">Expected Retirement Age:</label>
@@ -305,51 +306,49 @@
                             <option value="65">65 years (Extended)</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="annual-increment">Expected Annual Salary Increment (%):</label>
                         <input type="number" id="annual-increment" name="annual-increment" min="0" max="20" step="0.5" value="3">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="dividend-rate">Expected Average EPF Dividend Rate (%):</label>
                         <input type="number" id="dividend-rate" name="dividend-rate" min="1" max="10" step="0.1" value="5">
                     </div>
                 </div>
             </div>
-            
+
             <button type="submit">Calculate Retirement Savings</button>
         </form>
-        
+
         <div class="results" id="results">
             <div class="results-summary" id="results-summary">
-                <!-- Summary results will be filled by JavaScript -->
-            </div>
-            
+                </div>
+
             <div class="tab-buttons">
                 <button class="tab-button active" data-tab="monthly">Monthly Contributions</button>
                 <button class="tab-button" data-tab="retirement">Retirement Projection</button>
                 <button class="tab-button" data-tab="chart">Growth Chart</button>
             </div>
-            
+
             <div class="tab-content active" id="monthly-tab">
                 <h3>Your EPF Monthly Contributions</h3>
                 <div id="monthly-results"></div>
             </div>
-            
+
             <div class="tab-content" id="retirement-tab">
                 <h3>Retirement Savings Projection</h3>
                 <div id="retirement-table"></div>
             </div>
-            
+
             <div class="tab-content" id="chart-tab">
                 <h3>EPF Balance Growth Over Time</h3>
                 <div class="chart-container" id="chart-container">
-                    <!-- Chart will be rendered here -->
-                    Chart visualization to be implemented with your preferred library
+                    <canvas id="balanceChart"></canvas>
                 </div>
             </div>
-            
+
             <div class="assumption-notes">
                 <h4>Calculator Assumptions:</h4>
                 <ul>
@@ -362,12 +361,12 @@
                 <p><strong>Note:</strong> This calculator provides estimates only. Actual retirement savings will depend on many factors including policy changes, economic conditions, and your personal career path.</p>
             </div>
         </div>
-        
+
         <div class="footer">
             <p>Disclaimer: This calculator provides estimates based on standard EPF contribution rates and assumptions. For official rates and calculations, please refer to the <a href="https://www.kwsp.gov.my" target="_blank">official KWSP website</a>.</p>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Tab functionality
@@ -376,20 +375,20 @@
                     // Remove active class from all buttons and tabs
                     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-                    
+
                     // Add active class to clicked button
                     this.classList.add('active');
-                    
+
                     // Show corresponding tab
                     const tabId = this.getAttribute('data-tab') + '-tab';
                     document.getElementById(tabId).classList.add('active');
                 });
             });
-            
+
             // Form submission
             document.getElementById('kwsp-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
                 // Get form values
                 const currentAge = parseInt(document.getElementById('current-age').value);
                 const currentSalary = parseFloat(document.getElementById('current-salary').value);
@@ -398,218 +397,47 @@
                 const annualIncrement = parseFloat(document.getElementById('annual-increment').value) / 100;
                 const dividendRate = parseFloat(document.getElementById('dividend-rate').value) / 100;
                 const useStandardRate = document.getElementById('rate-option').checked;
-                
+
                 // Validation
                 if (isNaN(currentAge) || isNaN(currentSalary)) {
                     alert('Please enter valid values for age and salary.');
                     return;
                 }
-                
+
                 // Calculate years until retirement
                 const yearsToRetirement = retirementAge - currentAge;
-                
+
                 if (yearsToRetirement <= 0) {
                     alert('Your current age must be less than retirement age.');
                     return;
                 }
-                
+
                 // Calculate current monthly contributions
                 const { employeeRate, employerRate } = getContributionRates(currentAge, useStandardRate, currentSalary);
                 const employeeContribution = currentSalary * employeeRate;
                 const employerContribution = currentSalary * employerRate;
                 const totalMonthlyContribution = employeeContribution + employerContribution;
-                
+
                 // Project retirement savings
                 const projectionData = calculateProjection(
-                    currentAge, retirementAge, currentSalary, currentBalance, 
+                    currentAge, retirementAge, currentSalary, currentBalance,
                     annualIncrement, dividendRate, useStandardRate
                 );
-                
+
                 // Final retirement balance
                 const finalBalance = projectionData[projectionData.length-1].totalBalance;
                 const totalContributions = projectionData[projectionData.length-1].totalContributions;
                 const totalDividends = finalBalance - currentBalance - totalContributions;
-                
+
                 // Calculate monthly withdrawal for 20 years after retirement
                 const monthsInRetirement = 20 * 12; // 20 years
                 const monthlyWithdrawal = finalBalance / monthsInRetirement;
-                
+
                 // Update results
                 updateResults(
                     employeeContribution, employerContribution, totalMonthlyContribution,
                     finalBalance, totalContributions, totalDividends, monthlyWithdrawal,
                     projectionData
                 );
-                
+
                 // Show results section
-                document.getElementById('results').style.display = 'block';
-                
-                // Scroll to results
-                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-            });
-            
-            // Function to get contribution rates based on age and salary
-            function getContributionRates(age, isStandard, salary) {
-                let employeeRate, employerRate;
-                
-                if (age < 55) {
-                    // Below 55 years
-                    employeeRate = isStandard ? 0.11 : 0.07;
-                    employerRate = salary <= 5000 ? 0.13 : 0.12;
-                } else if (age < 60) {
-                    // 55 to 60 years
-                    employeeRate = isStandard ? 0.05 : 0;
-                    employerRate = 0.06;
-                } else {
-                    // Above 60 years
-                    employeeRate = 0;
-                    employerRate = 0.04;
-                }
-                
-                return { employeeRate, employerRate };
-            }
-            
-            // Function to calculate retirement projection
-            function calculateProjection(currentAge, retirementAge, startingSalary, startingBalance, annualIncrement, dividendRate, useStandardRate) {
-                const projection = [];
-                let totalContributions = 0;
-                let currentSalary = startingSalary;
-                let balance = startingBalance;
-                
-                for (let age = currentAge; age <= retirementAge; age++) {
-                    const { employeeRate, employerRate } = getContributionRates(age, useStandardRate, currentSalary);
-                    
-                    // Calculate annual contributions
-                    const annualEmployeeContribution = currentSalary * employeeRate * 12;
-                    const annualEmployerContribution = currentSalary * employerRate * 12;
-                    const annualTotalContribution = annualEmployeeContribution + annualEmployerContribution;
-                    
-                    // Add contributions to balance
-                    balance += annualTotalContribution;
-                    
-                    // Calculate dividends (compounding annually)
-                    const annualDividend = balance * dividendRate;
-                    
-                    // Add dividends to balance
-                    balance += annualDividend;
-                    
-                    // Track total contributions
-                    totalContributions += annualTotalContribution;
-                    
-                    // Add data to projection
-                    projection.push({
-                        age: age,
-                        salary: currentSalary,
-                        employeeContribution: annualEmployeeContribution,
-                        employerContribution: annualEmployerContribution,
-                        totalContribution: annualTotalContribution,
-                        dividend: annualDividend,
-                        totalBalance: balance,
-                        totalContributions: totalContributions
-                    });
-                    
-                    // Increase salary for next year (except for final year)
-                    if (age < retirementAge) {
-                        currentSalary *= (1 + annualIncrement);
-                    }
-                }
-                
-                return projection;
-            }
-            
-            // Function to update results in UI
-            function updateResults(
-                employeeContribution, employerContribution, totalMonthlyContribution,
-                finalBalance, totalContributions, totalDividends, monthlyWithdrawal,
-                projectionData
-            ) {
-                // Update summary section
-                document.getElementById('results-summary').innerHTML = `
-                    <h3>Your Retirement Summary</h3>
-                    <div class="result-row">
-                        <span>Estimated EPF Balance at Retirement:</span>
-                        <span>RM ${finalBalance.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Total Contributions (You + Employer):</span>
-                        <span>RM ${totalContributions.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Total Dividends Earned:</span>
-                        <span>RM ${totalDividends.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Estimated Monthly Withdrawal for 20 years:</span>
-                        <span>RM ${monthlyWithdrawal.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                `;
-                
-                // Update monthly contributions section
-                document.getElementById('monthly-results').innerHTML = `
-                    <div class="result-row">
-                        <span>Current Monthly Salary:</span>
-                        <span>RM ${parseFloat(document.getElementById('current-salary').value).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Your Monthly Contribution:</span>
-                        <span>RM ${employeeContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Employer's Monthly Contribution:</span>
-                        <span>RM ${employerContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Total Monthly Contribution:</span>
-                        <span>RM ${totalMonthlyContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Account 1 (70% - Retirement):</span>
-                        <span>RM ${(totalMonthlyContribution * 0.7).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                    <div class="result-row">
-                        <span>Account 2 (30% - Flexible):</span>
-                        <span>RM ${(totalMonthlyContribution * 0.3).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                `;
-                
-                // Update retirement projection table
-                const tableHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Age</th>
-                                <th>Annual Salary</th>
-                                <th>Annual Contribution</th>
-                                <th>Annual Dividend</th>
-                                <th>Total Balance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${projectionData.map((item, index) => `
-                                <tr class="${index === projectionData.length - 1 ? 'highlight-row' : ''}">
-                                    <td>${item.age}</td>
-                                    <td>RM ${item.salary.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td>RM ${item.totalContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td>RM ${item.dividend.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td>RM ${item.totalBalance.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-                
-                document.getElementById('retirement-table').innerHTML = tableHTML;
-                
-                // For the chart, in a real implementation you would use a library like Chart.js
-                // This is just a placeholder
-                document.getElementById('chart-container').innerHTML = `
-                    <div style="text-align: center; padding: 50px;">
-                        <p>Chart visualization would appear here with a graphical representation of your EPF balance growth over time.</p>
-                        <p>Final balance: RM ${finalBalance.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                    </div>
-                `;
-            }
-        });
-    </script>
-</body>
-</html>
