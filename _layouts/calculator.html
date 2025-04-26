@@ -1,0 +1,209 @@
+---
+layout: default
+---
+
+<div class="calculator-page">
+  {{ content }}
+</div>
+
+<style>
+  /* Reset some theme styles that might interfere */
+  .calculator-page {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  /* Ensure calculator container gets proper styling regardless of theme */
+  .calculator-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  /* Calculator-specific overrides */
+  .calculator-container h2 {
+    color: #0063b2 !important;
+    margin-bottom: 20px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+  }
+  
+  .calculator-container .description {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .calculator-container .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .calculator-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  .calculator-container input[type="number"],
+  .calculator-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.3s;
+  }
+  
+  .calculator-container input[type="number"]:focus,
+  .calculator-container select:focus {
+    border-color: #0063b2;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 99, 178, 0.1);
+  }
+  
+  .calculator-container button {
+    background-color: #0063b2;
+    color: white;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .calculator-container button:hover {
+    background-color: #004e8c;
+    box-shadow: 0 4px 10px rgba(0, 99, 178, 0.2);
+  }
+  
+  .calculator-container .results {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f0f7ff;
+    border-radius: 8px;
+    text-align: left;
+    border-left: 4px solid #0063b2;
+    display: none;
+  }
+  
+  .calculator-container .results h3 {
+    color: #0063b2 !important;
+    margin-top: 0;
+    text-align: left !important;
+  }
+  
+  .calculator-container .result-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #ddd;
+    text-align: left;
+  }
+  
+  .calculator-container .result-row:last-child {
+    border-bottom: none;
+    font-weight: 700;
+    color: #0063b2;
+    font-size: 18px;
+  }
+  
+  .calculator-container .rate-note {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+    text-align: left;
+  }
+  
+  .calculator-container .footer {
+    margin-top: 30px;
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+  }
+  
+  .calculator-container .toggle-switch {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+  }
+  
+  .calculator-container .toggle-switch label {
+    margin: 0 10px 0 0;
+  }
+  
+  .calculator-container .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+  
+  .calculator-container .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .calculator-container .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+  }
+  
+  .calculator-container .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  
+  .calculator-container input:checked + .slider {
+    background-color: #0063b2;
+  }
+  
+  .calculator-container input:focus + .slider {
+    box-shadow: 0 0 1px #0063b2;
+  }
+  
+  .calculator-container input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .calculator-container {
+      padding: 20px;
+      margin: 10px auto;
+    }
+  }
+</style>
