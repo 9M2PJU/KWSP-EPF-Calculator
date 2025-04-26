@@ -1,134 +1,615 @@
----
-layout: calculator
-title: KWSP (EPF) Contribution Calculator
----
-
-<div class="calculator-container">
-    <div class="logo">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTAwIDYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iNjAiIGZpbGw9IiMwMDYzYjIiLz48dGV4dCB4PSI1MCIgeT0iMzciIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5LV1NQL0VQRjwvdGV4dD48L3N2Zz4=" alt="KWSP/EPF Logo" style="height: 60px; max-width: 100%;">
-    </div>
-    <h2>KWSP/EPF Contribution Calculator</h2>
-    <p class="description">Calculate your Employees Provident Fund (EPF) contributions based on your monthly salary in Malaysia.</p>
-    
-    <form id="kwsp-form">
-        <div class="form-group">
-            <label for="salary">Monthly Salary (RM):</label>
-            <input type="number" id="salary" name="salary" min="1" step="1" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="age-category">Age Category:</label>
-            <select id="age-category" name="age-category">
-                <option value="below55">Below 55 years</option>
-                <option value="55to60">55 to 60 years</option>
-                <option value="above60">Above 60 years</option>
-            </select>
-        </div>
-        
-        <div class="toggle-switch">
-            <label for="rate-option">Use Standard Rate:</label>
-            <label class="switch">
-                <input type="checkbox" id="rate-option" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <button type="submit">Calculate Contribution</button>
-    </form>
-    
-    <div class="results" id="results">
-        <h3>EPF Contribution Results</h3>
-        <div id="results-content"></div>
-    </div>
-    
-    <div class="footer">
-        <p>Disclaimer: This calculator provides estimates based on standard EPF contribution rates. For official rates and calculations, please refer to the <a href="https://www.kwsp.gov.my" target="_blank">official KWSP website</a>.</p>
-    </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('kwsp-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const salary = parseFloat(document.getElementById('salary').value);
-            const ageCategory = document.getElementById('age-category').value;
-            const useStandardRate = document.getElementById('rate-option').checked;
-            
-            if (isNaN(salary) || salary <= 0) {
-                alert('Please enter a valid salary amount.');
-                return;
-            }
-            
-            // Define rates based on age category
-            let employeeRate, employerRate;
-            
-            if (useStandardRate) {
-                // Standard rates
-                if (ageCategory === 'below55') {
-                    employeeRate = 0.11;
-                    employerRate = calcEmployerRate(salary);
-                } else if (ageCategory === '55to60') {
-                    employeeRate = 0.05;
-                    employerRate = 0.06;
-                } else { // above60
-                    employeeRate = 0;
-                    employerRate = 0.04;
-                }
-            } else {
-                // Flexible rates (defaults to minimum)
-                if (ageCategory === 'below55') {
-                    employeeRate = 0.07;
-                    employerRate = calcEmployerRate(salary);
-                } else if (ageCategory === '55to60') {
-                    employeeRate = 0;
-                    employerRate = 0.06;
-                } else { // above60
-                    employeeRate = 0;
-                    employerRate = 0.04;
-                }
-            }
-            
-            const employeeContribution = salary * employeeRate;
-            const employerContribution = salary * employerRate;
-            const totalContribution = employeeContribution + employerContribution;
-            
-            // Display results
-            const resultsDiv = document.getElementById('results');
-            const resultsContent = document.getElementById('results-content');
-            
-            resultsContent.innerHTML = `
-                <div class="result-row">
-                    <span>Monthly Salary:</span>
-                    <span>RM ${salary.toFixed(2)}</span>
-                </div>
-                <div class="result-row">
-                    <span>Employee Contribution (${(employeeRate * 100).toFixed(0)}%):</span>
-                    <span>RM ${employeeContribution.toFixed(2)}</span>
-                </div>
-                <div class="result-row">
-                    <span>Employer Contribution (${(employerRate * 100).toFixed(1)}%):</span>
-                    <span>RM ${employerContribution.toFixed(2)}</span>
-                </div>
-                <div class="result-row">
-                    <span>Total Monthly Contribution:</span>
-                    <span>RM ${totalContribution.toFixed(2)}</span>
-                </div>
-                <p class="rate-note">* Rates are based on the ${ageCategory === 'below55' ? 'standard EPF contribution rates for employees below 55 years' : 
-                                    ageCategory === '55to60' ? 'EPF contribution rates for employees 55-60 years old' : 
-                                    'EPF contribution rates for employees above 60 years old'}.</p>
-            `;
-            
-            resultsDiv.style.display = 'block';
-        });
-    });
-    
-    // Function to calculate employer rate based on salary tiers
-    function calcEmployerRate(salary) {
-        if (salary <= 5000) {
-            return 0.13; // 13% for salaries up to RM 5,000
-        } else {
-            return 0.12; // 12% for salaries above RM 5,000
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KWSP (EPF) Retirement Savings Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            line-height: 1.6;
         }
-    }
-</script>
+        .calculator-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 20px auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            background-color: #0063b2;
+            color: white;
+            width: 100px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            border-radius: 6px;
+        }
+        h2 {
+            color: #0063b2;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+        .description {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .form-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-column {
+            flex: 1 1 300px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            border-color: #0063b2;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 99, 178, 0.1);
+        }
+        button {
+            background-color: #0063b2;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #004e8c;
+            box-shadow: 0 4px 10px rgba(0, 99, 178, 0.2);
+        }
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        .results-summary {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #0063b2;
+            margin-bottom: 20px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            color: #0063b2;
+            font-size: 18px;
+        }
+        .results-detailed h3 {
+            color: #0063b2;
+            margin: 25px 0 15px;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .toggle-switch label {
+            margin: 0 10px 0 0;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #0063b2;
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #0063b2;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .chart-container {
+            height: 300px;
+            margin: 30px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+        .assumption-notes {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            margin-right: 5px;
+            cursor: pointer;
+            color: #666;
+            font-weight: 600;
+            width: auto;
+        }
+        .tab-button.active {
+            color: #0063b2;
+            border-bottom: 3px solid #0063b2;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            color: #444;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        th:first-child, td:first-child {
+            text-align: left;
+        }
+        .highlight-row {
+            background-color: #f0f7ff !important;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .calculator-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            .form-column {
+                flex: 1 1 100%;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <div class="logo">KWSP/EPF</div>
+            <h2>KWSP (EPF) Retirement Savings Calculator</h2>
+            <p class="description">Calculate your EPF contributions and estimate your retirement savings based on your salary and career path.</p>
+        </div>
+        
+        <form id="kwsp-form">
+            <div class="form-columns">
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="current-age">Current Age:</label>
+                        <input type="number" id="current-age" name="current-age" min="18" max="59" value="30" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="current-salary">Current Monthly Salary (RM):</label>
+                        <input type="number" id="current-salary" name="current-salary" min="1" value="3000" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="current-balance">Current EPF Balance (RM, optional):</label>
+                        <input type="number" id="current-balance" name="current-balance" min="0" value="50000">
+                    </div>
+                    
+                    <div class="toggle-switch">
+                        <label for="rate-option">Use Standard Rate:</label>
+                        <label class="switch">
+                            <input type="checkbox" id="rate-option" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="retirement-age">Expected Retirement Age:</label>
+                        <select id="retirement-age" name="retirement-age">
+                            <option value="55">55 years (Early)</option>
+                            <option value="60" selected>60 years (Standard)</option>
+                            <option value="65">65 years (Extended)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="annual-increment">Expected Annual Salary Increment (%):</label>
+                        <input type="number" id="annual-increment" name="annual-increment" min="0" max="20" step="0.5" value="3">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dividend-rate">Expected Average EPF Dividend Rate (%):</label>
+                        <input type="number" id="dividend-rate" name="dividend-rate" min="1" max="10" step="0.1" value="5">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit">Calculate Retirement Savings</button>
+        </form>
+        
+        <div class="results" id="results">
+            <div class="results-summary" id="results-summary">
+                <!-- Summary results will be filled by JavaScript -->
+            </div>
+            
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="monthly">Monthly Contributions</button>
+                <button class="tab-button" data-tab="retirement">Retirement Projection</button>
+                <button class="tab-button" data-tab="chart">Growth Chart</button>
+            </div>
+            
+            <div class="tab-content active" id="monthly-tab">
+                <h3>Your EPF Monthly Contributions</h3>
+                <div id="monthly-results"></div>
+            </div>
+            
+            <div class="tab-content" id="retirement-tab">
+                <h3>Retirement Savings Projection</h3>
+                <div id="retirement-table"></div>
+            </div>
+            
+            <div class="tab-content" id="chart-tab">
+                <h3>EPF Balance Growth Over Time</h3>
+                <div class="chart-container" id="chart-container">
+                    <!-- Chart will be rendered here -->
+                    Chart visualization to be implemented with your preferred library
+                </div>
+            </div>
+            
+            <div class="assumption-notes">
+                <h4>Calculator Assumptions:</h4>
+                <ul>
+                    <li>Contributions are made consistently throughout your career.</li>
+                    <li>EPF dividend rate remains constant at your selected rate.</li>
+                    <li>Salary increases happen annually at the specified rate.</li>
+                    <li>No early withdrawals from Account 1 (retirement).</li>
+                    <li>Account 1 (70%) and Account 2 (30%) allocation remains constant.</li>
+                </ul>
+                <p><strong>Note:</strong> This calculator provides estimates only. Actual retirement savings will depend on many factors including policy changes, economic conditions, and your personal career path.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Disclaimer: This calculator provides estimates based on standard EPF contribution rates and assumptions. For official rates and calculations, please refer to the <a href="https://www.kwsp.gov.my" target="_blank">official KWSP website</a>.</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab functionality
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and tabs
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding tab
+                    const tabId = this.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Form submission
+            document.getElementById('kwsp-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const currentAge = parseInt(document.getElementById('current-age').value);
+                const currentSalary = parseFloat(document.getElementById('current-salary').value);
+                const currentBalance = parseFloat(document.getElementById('current-balance').value) || 0;
+                const retirementAge = parseInt(document.getElementById('retirement-age').value);
+                const annualIncrement = parseFloat(document.getElementById('annual-increment').value) / 100;
+                const dividendRate = parseFloat(document.getElementById('dividend-rate').value) / 100;
+                const useStandardRate = document.getElementById('rate-option').checked;
+                
+                // Validation
+                if (isNaN(currentAge) || isNaN(currentSalary)) {
+                    alert('Please enter valid values for age and salary.');
+                    return;
+                }
+                
+                // Calculate years until retirement
+                const yearsToRetirement = retirementAge - currentAge;
+                
+                if (yearsToRetirement <= 0) {
+                    alert('Your current age must be less than retirement age.');
+                    return;
+                }
+                
+                // Calculate current monthly contributions
+                const { employeeRate, employerRate } = getContributionRates(currentAge, useStandardRate, currentSalary);
+                const employeeContribution = currentSalary * employeeRate;
+                const employerContribution = currentSalary * employerRate;
+                const totalMonthlyContribution = employeeContribution + employerContribution;
+                
+                // Project retirement savings
+                const projectionData = calculateProjection(
+                    currentAge, retirementAge, currentSalary, currentBalance, 
+                    annualIncrement, dividendRate, useStandardRate
+                );
+                
+                // Final retirement balance
+                const finalBalance = projectionData[projectionData.length-1].totalBalance;
+                const totalContributions = projectionData[projectionData.length-1].totalContributions;
+                const totalDividends = finalBalance - currentBalance - totalContributions;
+                
+                // Calculate monthly withdrawal for 20 years after retirement
+                const monthsInRetirement = 20 * 12; // 20 years
+                const monthlyWithdrawal = finalBalance / monthsInRetirement;
+                
+                // Update results
+                updateResults(
+                    employeeContribution, employerContribution, totalMonthlyContribution,
+                    finalBalance, totalContributions, totalDividends, monthlyWithdrawal,
+                    projectionData
+                );
+                
+                // Show results section
+                document.getElementById('results').style.display = 'block';
+                
+                // Scroll to results
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Function to get contribution rates based on age and salary
+            function getContributionRates(age, isStandard, salary) {
+                let employeeRate, employerRate;
+                
+                if (age < 55) {
+                    // Below 55 years
+                    employeeRate = isStandard ? 0.11 : 0.07;
+                    employerRate = salary <= 5000 ? 0.13 : 0.12;
+                } else if (age < 60) {
+                    // 55 to 60 years
+                    employeeRate = isStandard ? 0.05 : 0;
+                    employerRate = 0.06;
+                } else {
+                    // Above 60 years
+                    employeeRate = 0;
+                    employerRate = 0.04;
+                }
+                
+                return { employeeRate, employerRate };
+            }
+            
+            // Function to calculate retirement projection
+            function calculateProjection(currentAge, retirementAge, startingSalary, startingBalance, annualIncrement, dividendRate, useStandardRate) {
+                const projection = [];
+                let totalContributions = 0;
+                let currentSalary = startingSalary;
+                let balance = startingBalance;
+                
+                for (let age = currentAge; age <= retirementAge; age++) {
+                    const { employeeRate, employerRate } = getContributionRates(age, useStandardRate, currentSalary);
+                    
+                    // Calculate annual contributions
+                    const annualEmployeeContribution = currentSalary * employeeRate * 12;
+                    const annualEmployerContribution = currentSalary * employerRate * 12;
+                    const annualTotalContribution = annualEmployeeContribution + annualEmployerContribution;
+                    
+                    // Add contributions to balance
+                    balance += annualTotalContribution;
+                    
+                    // Calculate dividends (compounding annually)
+                    const annualDividend = balance * dividendRate;
+                    
+                    // Add dividends to balance
+                    balance += annualDividend;
+                    
+                    // Track total contributions
+                    totalContributions += annualTotalContribution;
+                    
+                    // Add data to projection
+                    projection.push({
+                        age: age,
+                        salary: currentSalary,
+                        employeeContribution: annualEmployeeContribution,
+                        employerContribution: annualEmployerContribution,
+                        totalContribution: annualTotalContribution,
+                        dividend: annualDividend,
+                        totalBalance: balance,
+                        totalContributions: totalContributions
+                    });
+                    
+                    // Increase salary for next year (except for final year)
+                    if (age < retirementAge) {
+                        currentSalary *= (1 + annualIncrement);
+                    }
+                }
+                
+                return projection;
+            }
+            
+            // Function to update results in UI
+            function updateResults(
+                employeeContribution, employerContribution, totalMonthlyContribution,
+                finalBalance, totalContributions, totalDividends, monthlyWithdrawal,
+                projectionData
+            ) {
+                // Update summary section
+                document.getElementById('results-summary').innerHTML = `
+                    <h3>Your Retirement Summary</h3>
+                    <div class="result-row">
+                        <span>Estimated EPF Balance at Retirement:</span>
+                        <span>RM ${finalBalance.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Total Contributions (You + Employer):</span>
+                        <span>RM ${totalContributions.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Total Dividends Earned:</span>
+                        <span>RM ${totalDividends.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Estimated Monthly Withdrawal for 20 years:</span>
+                        <span>RM ${monthlyWithdrawal.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                `;
+                
+                // Update monthly contributions section
+                document.getElementById('monthly-results').innerHTML = `
+                    <div class="result-row">
+                        <span>Current Monthly Salary:</span>
+                        <span>RM ${parseFloat(document.getElementById('current-salary').value).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Your Monthly Contribution:</span>
+                        <span>RM ${employeeContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Employer's Monthly Contribution:</span>
+                        <span>RM ${employerContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Total Monthly Contribution:</span>
+                        <span>RM ${totalMonthlyContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Account 1 (70% - Retirement):</span>
+                        <span>RM ${(totalMonthlyContribution * 0.7).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>Account 2 (30% - Flexible):</span>
+                        <span>RM ${(totalMonthlyContribution * 0.3).toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                `;
+                
+                // Update retirement projection table
+                const tableHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Age</th>
+                                <th>Annual Salary</th>
+                                <th>Annual Contribution</th>
+                                <th>Annual Dividend</th>
+                                <th>Total Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${projectionData.map((item, index) => `
+                                <tr class="${index === projectionData.length - 1 ? 'highlight-row' : ''}">
+                                    <td>${item.age}</td>
+                                    <td>RM ${item.salary.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td>RM ${item.totalContribution.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td>RM ${item.dividend.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td>RM ${item.totalBalance.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                
+                document.getElementById('retirement-table').innerHTML = tableHTML;
+                
+                // For the chart, in a real implementation you would use a library like Chart.js
+                // This is just a placeholder
+                document.getElementById('chart-container').innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <p>Chart visualization would appear here with a graphical representation of your EPF balance growth over time.</p>
+                        <p>Final balance: RM ${finalBalance.toLocaleString('en-MY', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
