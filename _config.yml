@@ -6,7 +6,20 @@ url: "" # the base hostname & protocol for your site
 
 # Build settings
 markdown: kramdown
-theme: minima # You can change this to any supported GitHub Pages theme
+theme: minima
+
+# Minima theme settings
+minima:
+  # social_links:
+  #   - { platform: github,  user_url: "https://github.com/yourusername" }
+
+# Enable post excerpts
+show_excerpts: false
+
+# Permalink style
+permalink: pretty
+
+# Plugins
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
@@ -18,3 +31,4 @@ exclude:
   - node_modules
   - vendor
   - .gitignore
+  - README.md
