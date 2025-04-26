@@ -1,0 +1,20 @@
+# Site settings
+title: KWSP (EPF) Contribution Calculator
+description: Calculate your Employees Provident Fund (EPF) contributions based on your monthly salary in Malaysia
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site
+
+# Build settings
+markdown: kramdown
+theme: minima # You can change this to any supported GitHub Pages theme
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .gitignore
