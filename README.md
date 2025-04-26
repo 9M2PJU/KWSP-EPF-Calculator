@@ -22,11 +22,6 @@ This is a simple web-based calculator that helps Malaysian employees estimate th
 3. Choose whether to use standard or minimum contribution rates
 4. Click "Calculate Contribution" to see your results
 
-## Built With
-
-- Jekyll - The static site generator
-- GitHub Pages - For hosting
-
 ## Contributing
 
 Feel free to submit issues or pull requests if you have suggestions for improvements.
