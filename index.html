@@ -1,0 +1,36 @@
+---
+layout: single
+title: "KWSP (EPF) Contribution Calculator"
+permalink: /
+---
+
+<h2>KWSP Calculator</h2>
+
+<p>Calculate your KWSP contributions based on your monthly salary.</p>
+
+<form id="kwsp-form">
+  <label for="salary">Monthly Salary (RM):</label><br>
+  <input type="number" id="salary" name="salary" required><br><br>
+  <button type="submit">Calculate</button>
+</form>
+
+<div id="results" style="margin-top: 20px;"></div>
+
+<script>
+document.getElementById('kwsp-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const salary = parseFloat(document.getElementById('salary').value);
+  if (isNaN(salary)) {
+    alert('Please enter a valid salary.');
+    return;
+  }
+  const employee = salary * 0.11;
+  const employer = salary * 0.13;
+  const total = employee + employer;
+  document.getElementById('results').innerHTML = `
+    <p><strong>Employee Contribution (11%):</strong> RM ${employee.toFixed(2)}</p>
+    <p><strong>Employer Contribution (13%):</strong> RM ${employer.toFixed(2)}</p>
+    <p><strong>Total Contribution:</strong> RM ${total.toFixed(2)}</p>
+  `;
+});
+</script>
