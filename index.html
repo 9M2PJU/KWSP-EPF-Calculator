@@ -1,36 +1,301 @@
 ---
-layout: single
-title: "KWSP (EPF) Contribution Calculator"
-permalink: /
+layout: default
+title: KWSP (EPF) Contribution Calculator
 ---
 
-<h2>KWSP Calculator</h2>
+<div class="calculator-container">
+    <div class="logo">
+        <!-- Placeholder for KWSP logo -->
+        <svg width="100" height="60" viewBox="0 0 100 60">
+            <rect width="100" height="60" fill="#0063b2"/>
+            <text x="50" y="37" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">KWSP/EPF</text>
+        </svg>
+    </div>
+    <h2>KWSP/EPF Contribution Calculator</h2>
+    <p class="description">Calculate your Employees Provident Fund (EPF) contributions based on your monthly salary in Malaysia.</p>
+    
+    <form id="kwsp-form">
+        <div class="form-group">
+            <label for="salary">Monthly Salary (RM):</label>
+            <input type="number" id="salary" name="salary" min="1" step="1" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="age-category">Age Category:</label>
+            <select id="age-category" name="age-category">
+                <option value="below55">Below 55 years</option>
+                <option value="55to60">55 to 60 years</option>
+                <option value="above60">Above 60 years</option>
+            </select>
+        </div>
+        
+        <div class="toggle-switch">
+            <label for="rate-option">Use Standard Rate:</label>
+            <label class="switch">
+                <input type="checkbox" id="rate-option" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
 
-<p>Calculate your KWSP contributions based on your monthly salary.</p>
+        <button type="submit">Calculate Contribution</button>
+    </form>
+    
+    <div class="results" id="results">
+        <h3>EPF Contribution Results</h3>
+        <div id="results-content"></div>
+    </div>
+    
+    <div class="footer">
+        <p>Disclaimer: This calculator provides estimates based on standard EPF contribution rates. For official rates and calculations, please refer to the <a href="https://www.kwsp.gov.my" target="_blank">official KWSP website</a>.</p>
+    </div>
+</div>
 
-<form id="kwsp-form">
-  <label for="salary">Monthly Salary (RM):</label><br>
-  <input type="number" id="salary" name="salary" required><br><br>
-  <button type="submit">Calculate</button>
-</form>
-
-<div id="results" style="margin-top: 20px;"></div>
+<style>
+    .calculator-container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 450px;
+        text-align: center;
+        margin: 20px auto;
+        color: #333;
+        line-height: 1.6;
+    }
+    .logo {
+        margin-bottom: 15px;
+    }
+    .logo img {
+        height: 60px;
+    }
+    h2 {
+        color: #0063b2;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    .description {
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 14px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    input[type="number"], select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+    input[type="number"]:focus, select:focus {
+        border-color: #0063b2;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 99, 178, 0.1);
+    }
+    button {
+        background-color: #0063b2;
+        color: white;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 10px;
+    }
+    button:hover {
+        background-color: #004e8c;
+        box-shadow: 0 4px 10px rgba(0, 99, 178, 0.2);
+    }
+    .results {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f0f7ff;
+        border-radius: 8px;
+        text-align: left;
+        border-left: 4px solid #0063b2;
+        display: none;
+    }
+    .results h3 {
+        color: #0063b2;
+        margin-top: 0;
+    }
+    .result-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 12px 0;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed #ddd;
+    }
+    .result-row:last-child {
+        border-bottom: none;
+        font-weight: 700;
+        color: #0063b2;
+        font-size: 18px;
+    }
+    .rate-note {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+        font-style: italic;
+    }
+    .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+    }
+    .toggle-switch {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 15px;
+    }
+    .toggle-switch label {
+        margin: 0 10px 0 0;
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #0063b2;
+    }
+    input:focus + .slider {
+        box-shadow: 0 0 1px #0063b2;
+    }
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+</style>
 
 <script>
-document.getElementById('kwsp-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const salary = parseFloat(document.getElementById('salary').value);
-  if (isNaN(salary)) {
-    alert('Please enter a valid salary.');
-    return;
-  }
-  const employee = salary * 0.11;
-  const employer = salary * 0.13;
-  const total = employee + employer;
-  document.getElementById('results').innerHTML = `
-    <p><strong>Employee Contribution (11%):</strong> RM ${employee.toFixed(2)}</p>
-    <p><strong>Employer Contribution (13%):</strong> RM ${employer.toFixed(2)}</p>
-    <p><strong>Total Contribution:</strong> RM ${total.toFixed(2)}</p>
-  `;
-});
+    document.getElementById('kwsp-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const salary = parseFloat(document.getElementById('salary').value);
+        const ageCategory = document.getElementById('age-category').value;
+        const useStandardRate = document.getElementById('rate-option').checked;
+        
+        if (isNaN(salary) || salary <= 0) {
+            alert('Please enter a valid salary amount.');
+            return;
+        }
+        
+        // Define rates based on age category
+        let employeeRate, employerRate;
+        
+        if (useStandardRate) {
+            // Standard rates
+            if (ageCategory === 'below55') {
+                employeeRate = 0.11;
+                employerRate = calcEmployerRate(salary);
+            } else if (ageCategory === '55to60') {
+                employeeRate = 0.05;
+                employerRate = 0.06;
+            } else { // above60
+                employeeRate = 0;
+                employerRate = 0.04;
+            }
+        } else {
+            // Flexible rates (defaults to minimum)
+            if (ageCategory === 'below55') {
+                employeeRate = 0.07;
+                employerRate = calcEmployerRate(salary);
+            } else if (ageCategory === '55to60') {
+                employeeRate = 0;
+                employerRate = 0.06;
+            } else { // above60
+                employeeRate = 0;
+                employerRate = 0.04;
+            }
+        }
+        
+        const employeeContribution = salary * employeeRate;
+        const employerContribution = salary * employerRate;
+        const totalContribution = employeeContribution + employerContribution;
+        
+        // Display results
+        const resultsDiv = document.getElementById('results');
+        const resultsContent = document.getElementById('results-content');
+        
+        resultsContent.innerHTML = `
+            <div class="result-row">
+                <span>Monthly Salary:</span>
+                <span>RM ${salary.toFixed(2)}</span>
+            </div>
+            <div class="result-row">
+                <span>Employee Contribution (${(employeeRate * 100).toFixed(0)}%):</span>
+                <span>RM ${employeeContribution.toFixed(2)}</span>
+            </div>
+            <div class="result-row">
+                <span>Employer Contribution (${(employerRate * 100).toFixed(1)}%):</span>
+                <span>RM ${employerContribution.toFixed(2)}</span>
+            </div>
+            <div class="result-row">
+                <span>Total Monthly Contribution:</span>
+                <span>RM ${totalContribution.toFixed(2)}</span>
+            </div>
+            <p class="rate-note">* Rates are based on the ${ageCategory === 'below55' ? 'standard EPF contribution rates for employees below 55 years' : 
+                                ageCategory === '55to60' ? 'EPF contribution rates for employees 55-60 years old' : 
+                                'EPF contribution rates for employees above 60 years old'}.</p>
+        `;
+        
+        resultsDiv.style.display = 'block';
+    });
+    
+    // Function to calculate employer rate based on salary tiers
+    function calcEmployerRate(salary) {
+        if (salary <= 5000) {
+            return 0.13; // 13% for salaries up to RM 5,000
+        } else {
+            return 0.12; // 12% for salaries above RM 5,000
+        }
+    }
+    
+    // Reset form on page load
+    window.onload = function() {
+        document.getElementById('kwsp-form').reset();
+    };
 </script>
